@@ -1,0 +1,6 @@
+package com.worst.parkinglot.model;
+
+public enum Type {
+    TWO_WHEELER,
+    FOUR_WHEELER;
+}
