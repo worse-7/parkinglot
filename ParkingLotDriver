@@ -1,0 +1,29 @@
+package com.worst.parkinglot;
+
+import com.worst.parkinglot.model.ParkingLot;
+import com.worst.parkinglot.model.Slot;
+import com.worst.parkinglot.model.Type;
+import com.worst.parkinglot.model.Vehicle;
+
+import java.util.Optional;
+
+public class ParkingLotDriver {
+
+    public static void main(String []args) {
+        ParkingLot parkingLot = new ParkingLot("XYZ", 3);
+        ParkingLotManagerImpl parkingLotManager = new ParkingLotManagerImpl(parkingLot);
+        parkingLotManager.occupiedSlots();
+        parkingLotManager.unOccupiedSlots();
+        Optional<Slot> slot1 = parkingLotManager.park(new Vehicle("XYZ-100", "red", Type.FOUR_WHEELER));
+        Optional<Slot> slot2 =parkingLotManager.park(new Vehicle("XYZ-101", "red", Type.FOUR_WHEELER));
+        Optional<Slot> slot3 =parkingLotManager.park(new Vehicle("XYZ-102", "red", Type.FOUR_WHEELER));
+        Optional<Slot> slot4 =parkingLotManager.park(new Vehicle("XYZ-103", "red", Type.FOUR_WHEELER));
+        parkingLotManager.occupiedSlots();
+        parkingLotManager.unOccupiedSlots();
+        parkingLotManager.unPark(slot2);
+        parkingLotManager.unPark(slot4);
+        parkingLotManager.occupiedSlots();
+        parkingLotManager.unOccupiedSlots();
+        slot4 =parkingLotManager.park(new Vehicle("XYZ-103", "red", Type.FOUR_WHEELER));
+    }
+}
