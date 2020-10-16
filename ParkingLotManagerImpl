@@ -1,0 +1,93 @@
+package com.worst.parkinglot;
+
+import com.worst.parkinglot.model.ParkingLot;
+import com.worst.parkinglot.model.Slot;
+import com.worst.parkinglot.model.Vehicle;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class ParkingLotManagerImpl implements ParkingLotManager {
+
+    private ReentrantLock lock;
+    private ConcurrentHashMap<Slot, Vehicle> slotVehicleHashMap;
+    private PriorityQueue<Slot> slotPriorityQueue;
+
+    ParkingLotManagerImpl(ParkingLot parkingLot) {
+        this.slotVehicleHashMap = new ConcurrentHashMap<>();
+        this.lock = new ReentrantLock();
+        this.slotPriorityQueue = new PriorityQueue<>(new Comparator<Slot>() {
+            @Override
+            public int compare(Slot o1, Slot o2) {
+                return Integer.compare(o1.getNumber(), o2.getNumber());
+            }
+        });
+        for (int i = 1; i <= parkingLot.getSize(); i++) {
+            slotPriorityQueue.add(new Slot(i));
+        }
+    }
+
+    @Override
+    public Optional<Slot> getNearestSlot() {
+        try {
+            lock.lock();
+            Slot slot = slotPriorityQueue.poll();
+            if (slot != null) {
+                return Optional.of(slot);
+            }
+        } finally {
+            lock.unlock();
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Slot> park(Vehicle vehicle) {
+        Optional<Slot> slot = getNearestSlot();
+        if (slot.isPresent()) {
+            slotVehicleHashMap.put(slot.get(), vehicle);
+            System.out.println("Vehicle No : " + vehicle.getNumber() + " Parked In Slot " + slot.get().getNumber());
+        } else {
+            System.out.println("Parking Lot Is Full");
+        }
+        return slot;
+    }
+
+    @Override
+    public void unPark(Optional<Slot> slot) {
+        if (!slot.isPresent()) {
+            System.out.println("Invalid Slot");
+            return;
+        }
+        try {
+            lock.lock();
+            if (slotVehicleHashMap.containsKey(slot.get())) {
+                Vehicle vehicle = slotVehicleHashMap.get(slot.get());
+                slotVehicleHashMap.remove(slot.get());
+                slotPriorityQueue.add(slot.get());
+                System.out.println("Removing Vehicle No : " + vehicle.getNumber() + " From Slot No : " + slot.get().getNumber());
+            } else {
+                System.out.println("Slot No : " + slot.get().getNumber() + " Is already Empty.");
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void occupiedSlots() {
+        for (Map.Entry<Slot, Vehicle> entry : slotVehicleHashMap.entrySet()) {
+            System.out.println("Slot No : " + entry.getKey().getNumber() + " Is Occupied By Vehicle No : " + entry.getValue().getNumber());
+        }
+    }
+
+    public void unOccupiedSlots() {
+        synchronized (slotPriorityQueue) {
+            Iterator iterator = slotPriorityQueue.iterator();
+            while (iterator.hasNext()) {
+                Slot slot = (Slot) iterator.next();
+                System.out.println("Slot No : " + slot.getNumber() + " Is UnOccupied.");
+            }
+        }
+    }
+}
