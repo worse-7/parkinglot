@@ -1,0 +1,16 @@
+package com.worst.parkinglot.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class Slot {
+    private Integer number;
+    private Type type;
+
+    public Slot(Integer number) {
+        this.number = number;
+        this.type = Type.FOUR_WHEELER;
+    }
+}
