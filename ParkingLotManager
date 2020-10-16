@@ -1,0 +1,12 @@
+package com.worst.parkinglot;
+
+import com.worst.parkinglot.model.Slot;
+import com.worst.parkinglot.model.Vehicle;
+
+import java.util.Optional;
+
+public interface ParkingLotManager {
+    Optional<Slot> getNearestSlot();
+    Optional<Slot> park(Vehicle vehicle);
+    void unPark(Optional<Slot> slot);
+}
