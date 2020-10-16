@@ -1,0 +1,12 @@
+package com.worst.parkinglot.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class Vehicle {
+    private String number;
+    private String color;
+    private Type type;
+}
